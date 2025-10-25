@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="split left">
+        <div class="content-card">
+            <h2 class="section-title">Upload Audio File</h2>
+            <form method="post" enctype="multipart/form-data" class="upload-form">
+                {% csrf_token %}
+                <div class="file-upload">
+                    <input type="file" name="audioFile" accept="audio/*" class="file-input">
+                    <button type="submit" name="submit" class="submit-btn">Upload</button>
+                </div>
+            </form>
+
+            <div class="results-section">
+                {% if text %}
+                    <div class="text-result">
+                        <h3>Transcribed Text:</h3>
+                        <p>{{ text }}</p>
+                    </div>
+                {% endif %}
+
+                {% if words %}
+                    <div class="keywords-section">
+                        <h3>Keywords:</h3>
+                        <ul id="list" class="keywords-list">
+                            {% for word in words %}
+                                <li id="{{ i }}" class="keyword-item">{{ word }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="split right">
+        <div class="content-card">
+            <h2 class="section-title">Sign Language Animation</h2>
+            <div class="video-container">
+                <video id="videoPlayer" preload="auto" autoplay>
+                    <source src="" type="video/mp4">
+                    Your browser does not support HTML5 video.
+                </video>
+                <button class="control-btn" onclick="playPause()">
+                    Play/Pause
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.split {
+    flex: 1;
+    padding: 2rem;
+}
+
+.content-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    height: calc(100vh - 4rem);
+    overflow-y: auto;
+}
+
+.section-title {
+    color: #1f2937;
+    font-size: 1.75rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: #2563eb;
+    border-radius: 2px;
+}
+
+.upload-form {
+    margin-bottom: 2rem;
+}
+
+.file-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.file-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.5rem;
+    border: 2px dashed #e5e7eb;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.submit-btn, .control-btn {
+    background-color: #2563eb;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.submit-btn:hover, .control-btn:hover {
+    background-color: #1d4ed8;
+}
+
+.results-section {
+    margin-top: 2rem;
+}
+
+.text-result, .keywords-section {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.text-result h3, .keywords-section h3 {
+    color: #1f2937;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.keywords-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+}
+
+.keyword-item {
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    color: #feda6a;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.keyword-item[style*="color: rgb(9, 237, 199)"] {
+    background: #2563eb;
+    color: white !important;
+    transform: scale(1.1);
+}
+
+.video-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+#videoPlayer {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .split {
+        padding: 1rem;
+    }
+
+    .content-card {
+        height: auto;
+        margin-bottom: 1rem;
+    }
+
+    #videoPlayer {
+        max-width: 100%;
+    }
+}
+</style>
+
+<script>
+    // Keep the existing JavaScript functionality
+    function play() {
+        var videoSource = new Array();
+        var videos = document.getElementById("list").getElementsByTagName("li");
+        var j;
+        for(j=0; j<videos.length; j++) {
+            videoSource[j] = "/static/" + videos[j].innerHTML + ".mp4";
+        }
+
+        var i = 0;
+        var videoCount = videoSource.length;
+
+        function videoPlay(videoNum) {
+            document.getElementById("list").getElementsByTagName("li")[videoNum].style.color = "#09edc7";
+            document.getElementById("list").getElementsByTagName("li")[videoNum].style.fontSize = "xx-large";
+            document.getElementById("videoPlayer").setAttribute("src", videoSource[videoNum]);
+            document.getElementById("videoPlayer").load();
+            document.getElementById("videoPlayer").play();
+        }
+
+        document.getElementById('videoPlayer').addEventListener('ended', myHandler, false);
+        document.getElementById("list").getElementsByTagName("li")[0].style.color = "#09edc7";
+        document.getElementById("list").getElementsByTagName("li")[0].style.fontSize = "xx-large";
+
+        videoPlay(0);
+
+        function myHandler() {
+            document.getElementById("list").getElementsByTagName("li")[i].style.color = "#feda6a";
+            document.getElementById("list").getElementsByTagName("li")[i].style.fontSize = "20px";
+            i++;
+            if (i == videoCount) {
+                document.getElementById("videoPlayer").pause();
+            } else {
+                videoPlay(i);
+            }
+        }
+    }
+
+    function playPause() {
+        if (document.getElementById("videoPlayer").paused) {
+            play();
+        } else {
+            document.getElementById("videoPlayer").pause();
+        }
+    }
+</script>
+{% endblock %}

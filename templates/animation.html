@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="panel input-panel">
+        <h2 class="panel-title">Enter Text or Use Mic</h2>
+        
+        <form class="converter-form" method="post">
+            {% csrf_token %}
+            <div class="input-group">
+                <select id="languageSelect" class="language-select">
+                    <option value="english">English</option>
+                    <option value="malayalam">Malayalam</option>
+                    <option value="hindi">Hindi</option>
+                </select>
+                
+                <div class="speech-input">
+                    <input type="text" 
+                           name="sen" 
+                           id="speechToText" 
+                           placeholder="Enter text or click mic to speak..."
+                           class="text-input">
+                    <button type="button" 
+                            class="mic-button" 
+                            onclick="record(document.getElementById('languageSelect').value)">
+                        <img src="{% static 'mic3.png' %}" 
+                             alt="Microphone"
+                             class="mic-icon">
+                    </button>
+                </div>
+                
+                <button type="submit" class="submit-button">
+                    Convert to Sign Language
+                </button>
+            </div>
+        </form>
+
+        <div class="results-section">
+            <div class="result-item">
+                <h3>Input Text:</h3>
+                <p class="result-text">{{ text }}</p>
+            </div>
+            
+            <div class="result-item">
+                <h3>Key Words:</h3>
+                <ul id="list" class="keywords-list">
+                    {% for word in words %}
+                    <li id="{{ i }}" class="keyword-item">{{ word }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel video-panel">
+        <h2 class="panel-title">Sign Language Animation</h2>
+        
+        <div class="video-container">
+            <video id="videoPlayer" class="video-player" preload="auto" autoplay>
+                <source src="" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+            
+            <div class="video-controls">
+                <button class="control-button" onclick="playPause()">
+                    Play/Pause
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.container {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.panel {
+    flex: 1;
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.panel-title {
+    color: #2563eb;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.converter-form {
+    margin-bottom: 2rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.language-select {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    background-color: white;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.speech-input {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.text-input {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    font-size: 1rem;
+}
+
+.mic-button {
+    background-color: #2563eb;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.mic-button:hover {
+    background-color: #1d4ed8;
+}
+
+.mic-icon {
+    height: 24px;
+    width: 24px;
+    object-fit: contain;
+}
+
+.submit-button {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+    background-color: #1d4ed8;
+}
+
+.results-section {
+    margin-top: 2rem;
+}
+
+.result-item {
+    margin-bottom: 1.5rem;
+}
+
+.result-item h3 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.result-text {
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+.keywords-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+}
+
+.keyword-item {
+    background-color: #f3f4f6;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    color: #4b5563;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.video-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.video-player {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 0.5rem;
+    background-color: #f3f4f6;
+}
+
+.video-controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.control-button {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.control-button:hover {
+    background-color: #1d4ed8;
+}
+
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .panel {
+        width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .panel {
+        padding: 1rem;
+    }
+}
+</style>
+
+<script>
+function record(language) {
+    var recognition = new webkitSpeechRecognition();
+    recognition.lang = language === 'hindi' ? 'hi-IN' : 
+                      language === 'malayalam' ? 'ml-IN' : 'en-IN';
+
+    recognition.onresult = function(event) {
+        document.getElementById('speechToText').value = event.results[0][0].transcript;
+    }
+    recognition.start();
+}
+
+function play() {
+    var videoSource = [];
+    var videos = document.getElementById("list").getElementsByTagName("li");
+    
+    for(let j = 0; j < videos.length; j++) {
+        videoSource[j] = "/static/" + videos[j].innerHTML + ".mp4";
+    }
+
+    var i = 0;
+    var videoCount = videoSource.length;
+
+    function videoPlay(videoNum) {
+        // Reset all keywords to default style
+        Array.from(videos).forEach(li => {
+            li.style.color = '#4b5563';
+            li.style.fontSize = '1rem';
+            li.style.backgroundColor = '#f3f4f6';
+        });
+
+        // Highlight current keyword
+        videos[videoNum].style.color = '#2563eb';
+        videos[videoNum].style.backgroundColor = '#dbeafe';
+        videos[videoNum].style.fontSize = '1.1rem';
+
+        var videoPlayer = document.getElementById("videoPlayer");
+        videoPlayer.setAttribute("src", videoSource[videoNum]);
+        videoPlayer.load();
+        videoPlayer.play();
+    }
+
+    function myHandler() {
+        i++;
+        if (i == videoCount) {
+            document.getElementById("videoPlayer").pause();
+        } else {
+            videoPlay(i);
+        }
+    }
+
+    document.getElementById('videoPlayer').addEventListener('ended', myHandler, false);
+    videoPlay(0);
+}
+
+function playPause() {
+    var videoPlayer = document.getElementById("videoPlayer");
+    if (videoPlayer.paused) {
+        play();
+    } else {
+        videoPlayer.pause();
+    }
+}
+</script>
+{% endblock %}

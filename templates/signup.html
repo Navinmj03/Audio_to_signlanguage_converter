@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="signup-container">
+    <div class="signup-card">
+        <div class="card-header">
+            <h1 class="signup-title">Create Account</h1>
+            <p class="signup-subtitle">Join our community today</p>
+        </div>
+
+        <form class="signup-form" action="." method="post">
+            {% csrf_token %}
+            
+            <div class="form-fields">
+                {{ form }}
+            </div>
+
+            <button type="submit" class="signup-button">
+                Create Account
+                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+.signup-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+.signup-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.signup-title {
+    color: #1f2937;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.signup-subtitle {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Style Django form fields */
+.form-fields p {
+    margin: 0;
+}
+
+.form-fields label {
+    display: block;
+    color: #4b5563;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-fields input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background-color: #f9fafb;
+    color: #1f2937;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-fields input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background-color: white;
+}
+
+.signup-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 1rem;
+}
+
+.signup-button:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.button-icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s ease;
+}
+
+.signup-button:hover .button-icon {
+    transform: translateX(4px);
+}
+
+/* Error messages styling */
+.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0;
+    color: #dc2626;
+    font-size: 0.875rem;
+}
+
+.helptext {
+    display: block;
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Password strength indicators */
+.password-strength {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.password-strength ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.25rem 0;
+}
+
+.password-strength li {
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.password-strength li::before {
+    content: "•";
+    color: #9ca3af;
+}
+
+@media (max-width: 640px) {
+    .signup-container {
+        padding: 1rem;
+    }
+
+    .signup-card {
+        padding: 1.5rem;
+    }
+
+    .signup-title {
+        font-size: 1.75rem;
+    }
+}
+</style>
+
+<script>
+    // Remove empty spans as requested
+    document.addEventListener('DOMContentLoaded', function() {
+        const spans = document.getElementsByTagName("span");
+        if (spans[0]) spans[0].innerHTML = "";
+        if (spans[1]) spans[1].innerHTML = "";
+    });
+</script>
+{% endblock %}
